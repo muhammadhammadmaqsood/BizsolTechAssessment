@@ -1,0 +1,115 @@
+﻿@model BizsolTechAssessment.Models.DBModels.Developer
+@{
+    ViewData["Title"] = "Add Developer";
+}
+
+<h1>Add Developer</h1>
+<div class="row">
+    <div class="offset-2 col-md-2">
+        <div class="form-group">
+            <input type="button" id="btnAddForm" value="+ Add new" class="btn btn-block btn-success" />
+        </div>
+    </div>
+</div>
+<div class="offset-2 col-md-4" id="dvForm">
+    <form method="post" id="developerForm">
+        <div class="form">
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Name</label>
+                <input asp-for="Name" class="form-control name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label">Age</label>
+                <input asp-for="Age" class="form-control age" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="JobTitle" class="control-label">JobTitle</label>
+                <input asp-for="JobTitle" class="form-control jobTitle" value="Developer 1" />
+                <span asp-validation-for="JobTitle" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Add" class="btn btn-primary" id="btnAdd" />
+            <a asp-action="Index" asp-controller="Developers">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+
+    $(function() {
+        var counter = 2;
+        $("#btnAddForm").click(function() {
+            var html = '<hr/>';
+            html += '<div class="form">';
+            html += '<div class="form-group">';
+            html += '<label asp-for="Name"  class="control-label">Name</label>';
+            html += '<input asp-for="Name" class="form-control name" />';
+            html += '<span asp-validation-for="Name" class="text-danger"></span>';
+            html += '</div>';
+            html += '<div class="form-group">';
+            html += '<label asp-for="Age"  class="control-label">Age</label>';
+            html += '<input asp-for="Age"  class="form-control age" />';
+            html += '<span asp-validation-for="Age" class="text-danger"></span>';
+            html += '</div>';
+            html += '<div class= "form-group" >';
+            html += '<label  asp-for="JobTitle" class= "control-label">JobTitle</label>';
+            html += '<input asp-for="JobTitle" class="form-control jobTitle" value="Developer ' + counter++ + '"/>';
+            html += ' <span asp-validation-for="JobTitle" class="text-danger"></span>'
+            html += '</div>';
+            html += '</div>';
+            $("#btnAdd").before(html);
+        });
+
+        $("#developerForm").submit(function(e) {
+            // alert("Here");
+            e.preventDefault();
+            var url = $(this).closest("form").attr("action");
+            var rows = [];
+
+            $(".form").each(function() {
+                //alert($(this).val());
+                //console.log($(this).val());
+                var nameField = $(this).find(".name");
+                var ageField = $(this).find(".age");
+                var jobTitleField = $(this).find(".jobTitle");
+                //alert($(nameField).val());
+                // alert($(ageField).val());
+                //alert($(jobTitleField).val());
+                var row = {
+                    Name: $(nameField).val(),
+                    Age: $(ageField).val(),
+                    JobTitle: $(jobTitleField).val(),
+                };
+                rows.push(row);
+            });
+            console.log($(rows));
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'JSON',
+                url: '/Developers/AddDeveloperData',
+                data: { developerJson: JSON.stringify(rows) },
+                success: function(response) {
+                    if (response == true) {
+                        alert("Record(s) has been added successfully.");
+                        window.location = "http://localhost:20710/";
+                    }
+
+                    console.log($(data));
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                }
+            });
+        });
+    });
+</script>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
